@@ -205,29 +205,54 @@ void Game::update() {
    this->_window.clear(sf::Color(0, 0, 0));
 }
 
+// int Game::_countLivingNeighbors(int index) {
+//    int x = index % (WINDOW_WIDTH / CELL_SIZE);
+//    int y = index / (WINDOW_WIDTH / CELL_SIZE);
+//    int livingNeighborCount = 0;
+
+//    for (size_t i = 0; i < this->_cells.size(); i++) {
+//       int n_x = i % (WINDOW_WIDTH / CELL_SIZE);
+//       int n_y = i / (WINDOW_WIDTH / CELL_SIZE);
+//       if ((n_x == x     && n_y == y - 1) || // top
+//           (n_x == x     && n_y == y + 1) || // bottom
+//           (n_x == x - 1 && n_y == y    ) || // left
+//           (n_x == x + 1 && n_y == y    ) || // right
+//           (n_x == x - 1 && n_y == y - 1) || // top left
+//           (n_x == x + 1 && n_y == y - 1) || // top right
+//           (n_x == x - 1 && n_y == y + 1) || // bottom left
+//           (n_x == x + 1 && n_y == y + 1)) { // bottom right
+//          if (this->_cells[i]) {
+//             livingNeighborCount++;
+//          }
+//       }
+//    }
+
+//    return livingNeighborCount;
+// }
+
 int Game::_countLivingNeighbors(int index) {
-   int x = index % (WINDOW_WIDTH / CELL_SIZE);
-   int y = index / (WINDOW_WIDTH / CELL_SIZE);
-   int livingNeighborCount = 0;
+    int gridWidth = WINDOW_WIDTH / CELL_SIZE;
+    int gridHeight = WINDOW_HEIGHT / CELL_SIZE;
+    int x = index % gridWidth;
+    int y = index / gridWidth;
+    int count = 0;
 
-   for (size_t i = 0; i < this->_cells.size(); i++) {
-      int n_x = i % (WINDOW_WIDTH / CELL_SIZE);
-      int n_y = i / (WINDOW_WIDTH / CELL_SIZE);
-      if ((n_x == x     && n_y == y - 1) || // top
-          (n_x == x     && n_y == y + 1) || // bottom
-          (n_x == x - 1 && n_y == y    ) || // left
-          (n_x == x + 1 && n_y == y    ) || // right
-          (n_x == x - 1 && n_y == y - 1) || // top left
-          (n_x == x + 1 && n_y == y - 1) || // top right
-          (n_x == x - 1 && n_y == y + 1) || // bottom left
-          (n_x == x + 1 && n_y == y + 1)) { // bottom right
-         if (this->_cells[i]) {
-            livingNeighborCount++;
-         }
-      }
-   }
+    for (int dx = -1; dx <= 1; dx++) {
+        for (int dy = -1; dy <= 1; dy++) {
+            if (dx == 0 && dy == 0) continue; // skip self
 
-   return livingNeighborCount;
+            int nx = x + dx;
+            int ny = y + dy;
+
+            // bounds check
+            if (nx < 0 || nx >= gridWidth || ny < 0 || ny >= gridHeight) continue;
+
+            int neighborIndex = ny * gridWidth + nx;
+            if (this->_cells[neighborIndex]) count++;
+        }
+    }
+
+    return count;
 }
 
 void Game::clearCells() {
